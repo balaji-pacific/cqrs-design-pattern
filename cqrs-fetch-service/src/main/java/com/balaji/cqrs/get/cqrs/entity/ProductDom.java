@@ -1,24 +1,18 @@
 package com.balaji.cqrs.get.cqrs.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Entity
+@Document("PRODUCT_QUERY")
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "PRODUCT_QUERY")
 @Builder
+@ToString
 public class ProductDom {
     @Id
-    @GeneratedValue
-    private Integer id;
+    private String id;
     private String name;
     private String description;
     private String price;

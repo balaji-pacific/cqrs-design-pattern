@@ -2,6 +2,7 @@ package com.balaji.cqrs.get.cqrs.service.impl;
 
 import com.balaji.cqrs.get.cqrs.entity.ProductDom;
 import com.balaji.cqrs.get.cqrs.repository.ProductRepository;
+import com.balaji.cqrs.get.cqrs.service.GetProductService;
 import com.balaji.cqrs.post.cqrs.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetProductServiceImpl {
+public class GetProductServiceImpl implements GetProductService {
     @Autowired
     ProductRepository productRepository;
 
-    public List<ProductDto> getProductDetails(){
+    public List<ProductDto> getAllProducts(){
         List<ProductDom> productDoms = productRepository.findAll();
         List<ProductDto> productDtos = new ArrayList<ProductDto>();
         productDoms.stream().forEach(productDom -> {
@@ -33,6 +34,7 @@ public class GetProductServiceImpl {
     public void processProductEvents(ProductDto productDto){
         if(productDto.getEventType().equalsIgnoreCase("Create")){
             ProductDom productDom = ProductDom.builder()
+                    .id(productDto.getId())
                     .description(productDto.getDescription())
                     .name(productDto.getName())
                     .price(productDto.getPrice())
@@ -40,7 +42,7 @@ public class GetProductServiceImpl {
             productDom = productRepository.save(productDom);
         }
         if(productDto.getEventType().equalsIgnoreCase("Update")){
-            ProductDom existingProduct = productRepository.findById(Long.valueOf(productDto.getId())).get();
+            ProductDom existingProduct = productRepository.findById(productDto.getId()).get();
             existingProduct.setDescription(productDto.getDescription());
             existingProduct.setName(productDto.getName());
             existingProduct.setPrice(productDto.getPrice());
